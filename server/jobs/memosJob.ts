@@ -1,5 +1,3 @@
-// sqlite3 is an optional native dependency and may fail to load on some systems.
-// Historically we statically import `sqlite3` so developers can rebuild it locally.
 import sqlite3 from 'sqlite3';
 import { prisma } from '../prisma';
 import { userCaller } from '../routerTrpc/_app';

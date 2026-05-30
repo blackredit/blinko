@@ -62,6 +62,11 @@ interface OfflineNote extends Omit<Note, 'id' | 'references'> {
   references: { toNoteId: number }[];
 }
 
+interface NoteListSnapshot {
+  cacheKey: string;
+  notes: Note[];
+}
+
 export class BlinkoStore implements Store {
   sid = 'BlinkoStore';
   noteContent = '';
@@ -122,6 +127,7 @@ export class BlinkoStore implements Store {
   };
 
   offlineNoteStorage = new StorageListState<OfflineNote>({ key: 'offlineNotes' });
+  offlineNoteSnapshotsStorage = new StorageListState<NoteListSnapshot>({ key: 'offlineNoteSnapshots' });
 
   get offlineNotes(): OfflineNote[] {
     return this.offlineNoteStorage.list;
@@ -131,8 +137,72 @@ export class BlinkoStore implements Store {
     return RootStore.Get(BaseStore).isOnline;
   }
 
+  private getNoteListCacheKey(filterConfig: any, searchText: string) {
+    const normalized = {
+      searchText: searchText || '',
+      type: filterConfig?.type ?? null,
+      isArchived: filterConfig?.isArchived ?? null,
+      isRecycle: filterConfig?.isRecycle ?? null,
+      isShare: filterConfig?.isShare ?? null,
+      tagId: filterConfig?.tagId ?? null,
+      withoutTag: !!filterConfig?.withoutTag,
+      withFile: !!filterConfig?.withFile,
+      withLink: !!filterConfig?.withLink,
+      isUseAiQuery: !!filterConfig?.isUseAiQuery,
+      startDate: filterConfig?.startDate ? new Date(filterConfig.startDate).toISOString() : null,
+      endDate: filterConfig?.endDate ? new Date(filterConfig.endDate).toISOString() : null,
+      hasTodo: !!filterConfig?.hasTodo,
+    };
+
+    return JSON.stringify(normalized);
+  }
+
+  private mergeNotesById<T extends { id: number }>(primary: T[], secondary: T[]) {
+    const merged = new Map<number, T>();
+    [...primary, ...secondary].forEach(note => {
+      if (!merged.has(note.id)) {
+        merged.set(note.id, note);
+      }
+    });
+
+    return [...merged.values()];
+  }
+
+  private getCachedNoteList(cacheKey: string): Note[] {
+    return this.offlineNoteSnapshotsStorage.list?.find(snapshot => snapshot.cacheKey === cacheKey)?.notes ?? [];
+  }
+
+  private saveCachedNoteList(cacheKey: string, notes: Note[], page: number) {
+    const snapshots = [...this.offlineNoteSnapshotsStorage.list];
+    const index = snapshots.findIndex(snapshot => snapshot.cacheKey === cacheKey);
+    const existingNotes = index !== -1 ? snapshots[index].notes : [];
+    const mergedNotes = page === 1 ? notes : this.mergeNotesById(existingNotes, notes);
+
+    const nextSnapshot: NoteListSnapshot = {
+      cacheKey,
+      notes: mergedNotes,
+    };
+
+    if (index === -1) {
+      snapshots.push(nextSnapshot);
+    } else {
+      snapshots[index] = nextSnapshot;
+    }
+
+    this.offlineNoteSnapshotsStorage.save(snapshots);
+  }
+
   private saveOfflineNote(note: OfflineNote) {
-    this.offlineNoteStorage.push(note);
+    const offlineNotes = [...this.offlineNoteStorage.list];
+    const index = offlineNotes.findIndex(existing => existing.id === note.id);
+
+    if (index === -1) {
+      offlineNotes.push(note);
+    } else {
+      offlineNotes[index] = note;
+    }
+
+    this.offlineNoteStorage.save(offlineNotes);
   }
 
   private removeOfflineNote(id: number) {
@@ -150,6 +220,10 @@ export class BlinkoStore implements Store {
   }) {
     const { page, size, filterConfig, offlineFilter = () => true } = params;
     let notes: Note[] = [];
+    const cacheKey = this.getNoteListCacheKey({
+      ...this.noteListFilterConfig,
+      ...filterConfig,
+    }, this.searchText);
 
     if (this.isOnline) {
       const queryParams = { 
@@ -160,15 +234,18 @@ export class BlinkoStore implements Store {
         size 
       };
       notes = await api.notes.list.mutate(queryParams);
+      this.saveCachedNoteList(cacheKey, notes, page);
 
       
       if (this.offlineNotes.length > 0) {
         await this.syncOfflineNotes();
       }
+    } else {
+      notes = this.getCachedNoteList(cacheKey);
     }
 
     const filteredOfflineNotes = this.offlineNotes.filter(offlineFilter);
-    const mergedNotes = [...filteredOfflineNotes, ...notes].map(i => ({ ...i, isExpand: false }));
+    const mergedNotes = this.mergeNotesById(filteredOfflineNotes, notes).map(i => ({ ...i, isExpand: false }));
 
     if (!this.isOnline) {
       const start = (page - 1) * size;
@@ -200,10 +277,10 @@ export class BlinkoStore implements Store {
         metadata
       } = params;
 
-      if (!this.isOnline && !id) {
+      if (!this.isOnline) {
         const now = new Date();
         const offlineNote: OfflineNote = {
-          id: now.getTime(),
+          id: id ?? now.getTime(),
           content: content || '',
           type,
           isArchived: !!isArchived,
@@ -221,7 +298,7 @@ export class BlinkoStore implements Store {
         };
 
         this.saveOfflineNote(offlineNote);
-        showToast && RootStore.Get(ToastPlugin).success(i18n.t("create-successfully") + '-' + i18n.t("offline-status"));
+        showToast && RootStore.Get(ToastPlugin).success(`${id ? i18n.t("update-successfully") : i18n.t("create-successfully")}-${i18n.t("offline-status")}`);
         return offlineNote;
       }
 

@@ -139,7 +139,11 @@ export class PromiseState<T extends (...args: any[]) => Promise<any>, U = Return
           toast.error(message);
         }
       } else {
-        throw error;
+        if (this.value !== undefined && this.value !== null) {
+          return this.value;
+        }
+
+        return this.defaultValue;
       }
     } finally {
       this.loading.setValue(false);
@@ -279,7 +283,11 @@ export class PromisePageState<T extends (...args: any) => Promise<any>, U = Retu
           toast.error(message);
         }
       } else {
-        throw error;
+        if (Array.isArray(this.value) && this.value.length > 0) {
+          return this.value;
+        }
+
+        return this.defaultValue;
       }
     } finally {
       this.loading.setValue(false);
