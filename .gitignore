@@ -33,3 +33,6 @@ dev-dist
 .claude/settings.local.json
 target
 server/public
+.env.tmpl
+app/src-tauri/Cargo.toml
+bun.lock
