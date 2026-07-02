@@ -861,6 +861,7 @@ export const noteRouter = router({
         createdAt: z.date().optional(),
         updatedAt: z.date().optional(),
         metadata: z.any().optional(),
+        remindAt: z.date().nullable().optional(),
       }),
     )
     .output(z.any())
@@ -941,6 +942,7 @@ export const noteRouter = router({
         ...(content != null && { content }),
         ...(input.createdAt && { createdAt: input.createdAt }),
         ...(input.updatedAt && { updatedAt: input.updatedAt }),
+        ...(input.remindAt !== undefined && { remindAt: input.remindAt }),
       };
 
       if (input.metadata && id) {
@@ -1797,6 +1799,25 @@ export const noteRouter = router({
         ),
       );
 
+      return { success: true };
+    }),
+
+  snooze: authProcedure
+    .meta({ openapi: { method: 'POST', path: '/v1/note/snooze', summary: 'Snooze a note reminder', protect: true, tags: ['Note'] } })
+    .input(
+      z.object({
+        id: z.number(),
+        minutes: z.number(),
+      }),
+    )
+    .output(z.object({ success: z.boolean() }))
+    .mutation(async function ({ input, ctx }) {
+      const { id, minutes } = input;
+      const remindAt = new Date(Date.now() + minutes * 60 * 1000);
+      await prisma.notes.update({
+        where: { id, accountId: Number(ctx.id) },
+        data: { remindAt },
+      });
       return { success: true };
     }),
 });

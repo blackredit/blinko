@@ -856,5 +856,22 @@
   "custom-title": "自定义标题",
   "custom-title-tip": "用于浏览器标签页和登录页标题，留空将使用默认标题。",
   "custom-title-placeholder": "请输入标题（1-50个字符）",
-  "login-with": "登录 {{title}}"
+  "login-with": "登录 {{title}}",
+  "set-reminder": "设置提醒",
+  "reminder-time": "提醒时间",
+  "current-reminder": "当前提醒",
+  "clear-reminder": "清除提醒",
+  "reminder-set": "已设置提醒",
+  "note-reminder": "笔记提醒",
+  "email-to-note": "邮件转笔记",
+  "enable-imap": "启用 IMAP",
+  "enable-imap-desc": "自动将收到的邮件创建为笔记",
+  "imap-host": "IMAP 服务器",
+  "imap-port": "IMAP 端口",
+  "imap-user": "邮箱地址",
+  "imap-password": "邮箱密码",
+  "imap-password-desc": "Gmail 请使用应用专用密码",
+  "imap-folder": "IMAP 文件夹",
+  "auto-tag": "自动标签",
+  "auto-tag-desc": "邮件笔记的标签（如：email）"
 }

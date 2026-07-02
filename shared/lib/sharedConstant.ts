@@ -1,4 +1,6 @@
 export const DBBAK_TASK_NAME = 'backup-database'
 export const ARCHIVE_BLINKO_TASK_NAME = 'auto-archive-blinko'
 export const RECOMMAND_TASK_NAME = 'follow-recommand-index'
+export const REMINDER_CHECK_TASK_NAME = 'reminder-check'
+export const EMAIL_POLL_TASK_NAME = 'email-poll'
 export const VECTOR_DB_FILE_PATH = 'file:.blinko/vector/embeddings.db'

@@ -104,6 +104,14 @@ export const ZConfigKey = z.union([
   z.literal('signinFooterEnabled'),
   z.literal('signinFooterText'),
   z.literal('customTitle'),
+  z.literal('imapHost'),
+  z.literal('imapPort'),
+  z.literal('imapUser'),
+  z.literal('imapPassword'),
+  z.literal('imapFolder'),
+  z.literal('imapPollInterval'),
+  z.literal('imapEnabled'),
+  z.literal('imapAutoTag'),
   ZUserPerferConfigKey,
   z.any()
 ]);

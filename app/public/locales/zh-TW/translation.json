@@ -853,5 +853,22 @@
   "custom-title": "自訂標題",
   "custom-title-tip": "用於瀏覽器分頁和登入頁標題，留空將使用預設標題。",
   "custom-title-placeholder": "請輸入標題（1-50個字元）",
-  "login-with": "使用 {{title}} 登入"
+  "login-with": "使用 {{title}} 登入",
+  "set-reminder": "設定提醒",
+  "reminder-time": "提醒時間",
+  "current-reminder": "目前提醒",
+  "clear-reminder": "清除提醒",
+  "reminder-set": "已設定提醒",
+  "note-reminder": "筆記提醒",
+  "email-to-note": "郵件轉筆記",
+  "enable-imap": "啟用 IMAP",
+  "enable-imap-desc": "自動將收到的郵件建立為筆記",
+  "imap-host": "IMAP 伺服器",
+  "imap-port": "IMAP 連接埠",
+  "imap-user": "電子郵件地址",
+  "imap-password": "電子郵件密碼",
+  "imap-password-desc": "Gmail 請使用應用程式專用密碼",
+  "imap-folder": "IMAP 資料夾",
+  "auto-tag": "自動標籤",
+  "auto-tag-desc": "郵件筆記的標籤（如：email）"
 }

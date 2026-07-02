@@ -21,6 +21,7 @@ import { useState, useEffect } from 'react';
 import { BlinkoStore } from '@/store/blinkoStore';
 import { PluginSetting } from '@/components/BlinkoSettings/PluginSetting';
 import { ImportAIDialog } from '@/components/BlinkoSettings/ImportAIDialog';
+import { EmailSetting } from '@/components/BlinkoSettings/EmailSetting';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { Icon } from '@/components/Common/Iconify/icons';
 import { HotkeySetting } from '@/components/BlinkoSettings/HotkeySetting';
@@ -106,6 +107,14 @@ export const allSettings: SettingItem[] = [
     component: <MusicSetting />,
     requireAdmin: true,
     keywords: ['music', '音乐设置'],
+  },
+  {
+    key: 'email',
+    title: ('email-to-note'),
+    icon: 'mdi:email-outline',
+    component: <EmailSetting />,
+    requireAdmin: true,
+    keywords: ['email', 'imap', '邮件'],
   },
   {
     key: 'import',

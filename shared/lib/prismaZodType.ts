@@ -80,6 +80,7 @@ export const notesSchema = z.object({
   metadata: z.any(),
   sortOrder: z.number().nullable().optional(),
   accountId: z.union([z.number().int(), z.null()]),
+  remindAt: z.coerce.date().nullable().optional(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })
@@ -241,6 +242,7 @@ export const NotificationType = {
   FOLLOW: 'follow',
   COMMENT: 'comment',
   SYSTEM: 'system',
+  REMINDER: 'reminder',
 } as const
 
 export const notificationType = z.union([

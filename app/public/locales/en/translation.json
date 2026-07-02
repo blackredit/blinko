@@ -839,5 +839,22 @@
   "custom-title": "Custom Title",
   "custom-title-tip": "Used for browser tab and sign-in title. Leave empty to use the default title.",
   "custom-title-placeholder": "Enter a title (1-50 chars)",
-  "login-with": "Login With {{title}}"
+  "login-with": "Login With {{title}}",
+  "set-reminder": "Set Reminder",
+  "reminder-time": "Reminder Time",
+  "current-reminder": "Current Reminder",
+  "clear-reminder": "Clear Reminder",
+  "reminder-set": "Reminder is set",
+  "note-reminder": "Note Reminder",
+  "email-to-note": "Email to Note",
+  "enable-imap": "Enable IMAP",
+  "enable-imap-desc": "Automatically create notes from incoming emails",
+  "imap-host": "IMAP Host",
+  "imap-port": "IMAP Port",
+  "imap-user": "Email Address",
+  "imap-password": "Email Password",
+  "imap-password-desc": "Use app password for Gmail",
+  "imap-folder": "IMAP Folder",
+  "auto-tag": "Auto Tag",
+  "auto-tag-desc": "Tag added to email notes (e.g., email)"
 }

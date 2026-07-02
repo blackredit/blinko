@@ -6,6 +6,7 @@ import { BlinkoStore } from '@/store/blinkoStore';
 import { Note, NoteType } from '@shared/lib/types';
 import { RootStore } from '@/store';
 import dayjs from '@/lib/dayjs';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { _ } from '@/lib/lodash';
 import { useIsIOS } from '@/lib/hooks';
@@ -14,6 +15,7 @@ import { BlinkoShareDialog } from '../BlinkoShareDialog';
 import { observer } from 'mobx-react-lite';
 import { AvatarAccount, CommentButton, UserAvatar } from './commentButton';
 import { HistoryButton } from '../BlinkoNoteHistory/HistoryButton';
+import { ReminderDialog } from './ReminderDialog';
 import { api } from '@/lib/trpc';
 import { PromiseCall } from '@/store/standard/PromiseState';
 
@@ -29,6 +31,7 @@ export const CardHeader = observer(({ blinkoItem, blinko, isShareMode, isExpande
   const { t } = useTranslation();
   const iconSize = isExpanded ? '20' : '16';
   const isIOSDevice = useIsIOS();
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
 
   const handleTodoToggle = async (e) => {
     e.stopPropagation();
@@ -116,6 +119,33 @@ export const CardHeader = observer(({ blinkoItem, blinko, isShareMode, isExpande
             }
           </div>
         </Tooltip>
+
+        {!isShareMode && (
+          <>
+            <Tooltip content={blinkoItem.remindAt ? t('reminder-set') : t('set-reminder')} delay={1000}>
+              <div
+                className={`flex items-center cursor-pointer ${blinkoItem.remindAt ? 'text-orange-500' : 'text-desc'}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsReminderOpen(true);
+                }}
+              >
+                <Icon
+                  icon={blinkoItem.remindAt ? "mdi:bell-ring" : "mdi:bell-ring-outline"}
+                  width={iconSize}
+                  height={iconSize}
+                  className={isExpanded ? '' : `opacity-0 group-hover/card:opacity-100 group-hover/card:translate-x-0 translate-x-1`}
+                />
+              </div>
+            </Tooltip>
+            <ReminderDialog
+              isOpen={isReminderOpen}
+              onClose={() => setIsReminderOpen(false)}
+              noteId={blinkoItem.id!}
+              currentRemindAt={blinkoItem.remindAt}
+            />
+          </>
+        )}
 
         <Copy
           size={16}

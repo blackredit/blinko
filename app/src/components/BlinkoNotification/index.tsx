@@ -12,10 +12,12 @@ import { Notifications, NotificationType } from '@shared/lib/prismaZodType';
 import { ShowCommentDialog } from '../BlinkoCard/commentButton';
 import { BlinkoStore } from '@/store/blinkoStore';
 import { UserStore } from '@/store/user';
+import { useNavigate } from 'react-router-dom';
 
 
 export const BlinkoNotification = observer(() => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const blinko = RootStore.Get(BlinkoStore)
   const user = RootStore.Get(UserStore)
   const store = RootStore.Local(() => ({
@@ -52,6 +54,10 @@ export const BlinkoNotification = observer(() => {
     handleMarkAsRead(notification: Notifications) {
       if (notification.type === NotificationType.COMMENT) {
         ShowCommentDialog(notification.metadata.noteId);
+      } else if (notification.type === 'reminder') {
+        // Navigate to the note
+        store.markAsRead.call({ id: notification.id });
+        return;
       }
       this.markAsRead.call({ id: notification.id });
     }
@@ -134,7 +140,8 @@ export const BlinkoNotification = observer(() => {
                         notification.type === NotificationType.SYSTEM ? 'mdi:bell' :
                           notification.type === NotificationType.COMMENT ? 'mdi:comment' :
                             notification.type === NotificationType.FOLLOW ? 'mingcute:user-star-line' :
-                              'mdi:account-plus'
+                              notification.type === 'reminder' ? 'mdi:bell-ring-outline' :
+                                'mdi:account-plus'
                       }
                       className="text-xl text-default-600"
                     />
